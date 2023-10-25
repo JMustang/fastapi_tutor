@@ -94,6 +94,12 @@ python-dotenv
 pip install -r requirements.txt
 ```
 
+- Com o **poetry** use o comando:
+
+```bash
+poetry add -D --lock -E python3.11 -i requirements.txt
+```
+
 - O mesmo funciona para as libs de desenvolvimento:
 
 No seu navegador digite **http://localhost:8000**
