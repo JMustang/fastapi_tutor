@@ -74,4 +74,26 @@ poetry add uvicorn
 uvicorn nome-do-projeto.main:app --reload --host localhost --port 8000
 ```
 
+- Tu também pode criar um arquivo **requirements.txt** na raiz do projeto e adicionar as bibliotecas que tu vai usar, tipo:
+
+```txt
+fastapi
+uvicorn
+sqlalchemy
+async-exit-stack
+async-generator
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart
+python-dotenv
+```
+
+- Em seguida, usar o comando:
+
+```bash
+pip install -r requirements.txt
+```
+
+- O mesmo funciona para as libs de desenvolvimento:
+
 No seu navegador digite **http://localhost:8000**
