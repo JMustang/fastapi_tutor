@@ -33,7 +33,7 @@ cd nome-do-projeto
 ├── README.md
 └── pyproject.toml
 └── tests
-    └──__init__.py
+    └── __init__.py
 ```
 
 - Criando ambiente virtual
@@ -44,7 +44,7 @@ poetry install
 ```
 
 ```bash
-# Esse comando inicia o ambiente virtual
+# Esse comando inicia o ambiente virtual do poetry
 poetry shell
 ```
 
