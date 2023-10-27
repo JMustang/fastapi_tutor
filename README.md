@@ -64,7 +64,8 @@ def rota_teste():
 return {'message': 'Olá Mundo!'}
 ```
 
-- Para executar precisamos de um servidor, no fastapi e recomendado usar o **uvicorn**
+- Para executar precisamos de um servidor, no fastapi e recomendado usar o **uvicorn**.
+  O **uvicorn** nos fornece um servidor para desenvolvermos e testar a API.
 
 ```bash
 poetry add uvicorn
