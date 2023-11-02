@@ -14,6 +14,12 @@ class Post(BaseModel):
     rating: Optional[int] = None
 
 
+def find_post(id):
+    for post in data:
+        if post["id"] == id:
+            return post
+
+
 data = [
     {"id": 1, "title": "POST", "content": "Content of the post"},
     {"id": 2, "title": "POST", "content": "Content of the post"},
@@ -30,6 +36,12 @@ async def root():
 @app.get("/posts")
 async def get_posts():
     return {"message": data}
+
+
+@app.get("/posts/{id}")
+async def get_post(id: int):
+    post = find_post(id)
+    return {"message": post}
 
 
 @app.post("/posts")
