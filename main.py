@@ -28,12 +28,12 @@ data = [
 ]
 
 
-@app.get("/")
+@app.get("/", status_code=status.HTTP_200_OK)
 async def root():
     return {"message": "Hello World"}
 
 
-@app.get("/posts")
+@app.get("/posts", status_code=status.HTTP_200_OK)
 async def get_posts():
     return {"message": data}
 
@@ -61,3 +61,15 @@ async def create_posts(post: Post):
     post_dict["id"] = randrange(0, 1000000)
     data.append(post_dict)
     return {"data": post_dict}
+
+
+@app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_post(id: int):
+    post = find_post(id)
+    if post:
+        data.remove(post)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Post with id: {id} does not exist",
+    )
