@@ -1,6 +1,6 @@
-![LOGO](LOGO)
-
 # Tutorial de backend com FastAPI, poetry, persistência de dados e deploy
+
+![LOGO](LOGO)
 
 ## Do zero ao CRUD
 
@@ -105,5 +105,14 @@ poetry add -D --lock -E python3.11 -i requirements.txt
 
 - O mesmo funciona para as libs de desenvolvimento:
 
-No seu navegador digite **http://localhost:8000**.
-digite **http://localhost:8000/docs**, para visualizar a documentação, usando o swagger.
+No seu navegador digite **<http://localhost:8000>**.
+digite **<http://localhost:8000/docs>**, para visualizar a documentação, usando o swagger.
+
+### CRUD Criado
+
+Verbos mais usados em um CRUD.
+
+- CREATE = Post
+- READ = Get
+- UPDATE = Put ou Patch
+- DELETE = Delete
