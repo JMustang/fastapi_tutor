@@ -20,6 +20,13 @@ def find_post(id):
             return post
 
 
+def find_post_index(id):
+    for i, post in enumerate(data):
+        if post["id"] == id:
+            return i
+    return -1
+
+
 data = [
     {"id": 1, "title": "POST", "content": "Content of the post"},
     {"id": 2, "title": "POST", "content": "Content of the post"},
@@ -60,6 +67,16 @@ async def create_posts(post: Post):
     post_dict = post.model_dump()
     post_dict["id"] = randrange(0, 1000000)
     data.append(post_dict)
+    return {"data": post_dict}
+
+
+# Falta testa
+@app.put("/posts/{id}")
+async def update_post(id: int, post: Post):
+    post_dict = post.model_dump()
+    post_dict["id"] = id
+    post_index = find_post_index(id)
+    data[post_index] = post_dict
     return {"data": post_dict}
 
 
