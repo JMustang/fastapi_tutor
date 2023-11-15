@@ -63,7 +63,9 @@ async def root():
 
 @app.get("/posts", status_code=status.HTTP_200_OK)
 async def get_posts():
-    return {"message": data}
+    cursor.execute("SELECT * FROM posts")
+    posts = cursor.fetchall()
+    return {"message": posts}
 
 
 @app.get("/posts/{id}")
@@ -85,10 +87,14 @@ async def get_post(id: int, res: Response):
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
 async def create_posts(post: Post):
-    post_dict = post.model_dump()
-    post_dict["id"] = randrange(0, 1000000)
-    data.append(post_dict)
-    return {"data": post_dict}
+    cursor.execute(
+        "INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING *  ",
+        (post.title, post.content, post.published),
+    )
+
+    new_post = cursor.fetchone()
+    conn.commit()
+    return {"data": new_post}
 
 
 # Falta testa
