@@ -68,15 +68,12 @@ async def get_posts():
     return {"message": posts}
 
 
-@app.get("/posts/{id}")
-async def get_post(id: int, res: Response):
-    post = find_post(id)
+@app.get("/posts/{id}", status_code=status.HTTP_200_OK)
+async def get_post(id: int):
+    cursor.execute("SELECT * FROM posts WHERE id = %s", (str(id),))
+    post = cursor.fetchone()
 
     if not post:
-        # uma forma de retornar erros, usando duas libs que vem do FastAPI, (Response e status).
-        # res.status_code = status.HTTP_404_NOT_FOUND
-        # return {"message": f"Post with id: {id} was not found"}
-
         raise HTTPException(
             # Essa seria outra forma de retornar erros, usando a lib HTTPException.
             status_code=status.HTTP_404_NOT_FOUND,
