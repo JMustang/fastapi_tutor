@@ -1,10 +1,16 @@
 from typing import Optional
-from fastapi import Body, FastAPI, Response, status, HTTPException
+from fastapi import FastAPI, Response, status, HTTPException, Depends
 from pydantic import BaseModel
 from random import randrange
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
+from sqlalchemy.orm import Session
+from .database import engine, get_db
+from . import models
+
+
+models.Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI()
@@ -62,9 +68,10 @@ async def root():
 
 
 @app.get("/posts", status_code=status.HTTP_200_OK)
-async def get_posts():
-    cursor.execute("SELECT * FROM posts")
-    posts = cursor.fetchall()
+async def get_posts(db: Session = Depends(get_db)):
+    # cursor.execute("SELECT * FROM posts")
+    # posts = cursor.fetchall()
+    posts = db.query(models.Post).all()
     return {"message": posts}
 
 
