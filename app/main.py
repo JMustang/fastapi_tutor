@@ -106,11 +106,12 @@ async def update_post(id: int, post: Post):
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_post(id: int):
-    post = find_post(id)
-    if post:
-        data.remove(post)
-        return Response(status_code=status.HTTP_204_NO_CONTENT)
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"Post with id: {id} does not exist",
-    )
+    cursor.execute("DELETE FROM posts WHERE id = %s RETURNING *", (str(id),))
+    post = cursor.fetchone()
+    conn.commit()
+    if post == None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Post with id: {id} does not exist",
+        )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
