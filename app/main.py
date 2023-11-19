@@ -97,11 +97,20 @@ async def create_posts(post: Post):
 # Falta testa
 @app.put("/posts/{id}")
 async def update_post(id: int, post: Post):
-    post_dict = post.model_dump()
-    post_dict["id"] = id
-    post_index = find_post_index(id)
-    data[post_index] = post_dict
-    return {"data": post_dict}
+    cursor.execute(
+        "UPDATE posts SET title = %s, content = %s, published = %s WHERE id = %s RETURNING *",
+        (post.title, post.content, post.published, str(id)),
+    )
+    updated_post = cursor.fetchone()
+    conn.commit()
+
+    if update_post == None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Post with id: {id} does not exist",
+        )
+
+    return {"data": updated_post}
 
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
