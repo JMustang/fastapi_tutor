@@ -69,28 +69,39 @@ async def root():
 
 @app.get("/posts", status_code=status.HTTP_200_OK)
 async def get_posts(db: Session = Depends(get_db)):
-    # cursor.execute("SELECT * FROM posts")
-    # posts = cursor.fetchall()
     posts = db.query(models.Post).all()
     return {"message": posts}
+    # cursor.execute("SELECT * FROM posts")
+    # posts = cursor.fetchall()
 
 
 @app.get("/posts/{id}", status_code=status.HTTP_200_OK)
-async def get_post(id: int):
-    cursor.execute("SELECT * FROM posts WHERE id = %s", (str(id),))
-    post = cursor.fetchone()
-
+async def get_post(id: int, db: Session = Depends(get_db)):
+    post = db.query(models.Post).filter(models.Post.id == id).first()
     if not post:
         raise HTTPException(
-            # Essa seria outra forma de retornar erros, usando a lib HTTPException.
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Post with id: {id} was not found",
+            detail=f"Post with id ${id}, was not found!",
         )
     return {"message": post}
+    # cursor.execute("SELECT * FROM posts WHERE id = %s", (str(id),))
+    # post = cursor.fetchone()
+
+    # if not post:
+    #     raise HTTPException(
+    #         # Essa seria outra forma de retornar erros, usando a lib HTTPException.
+    #         status_code=status.HTTP_404_NOT_FOUND,
+    #         detail=f"Post with id: {id} was not found",
+    #     )
 
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
 async def create_posts(post: Post, db: Session = Depends(get_db)):
+    new_post = models.Post(**post.model_dump())
+    db.add(new_post)
+    db.commit()
+    db.refresh(new_post)
+    return {"data": new_post}
     # cursor.execute(
     #     "INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING *  ",
     #     (post.title, post.content, post.published),
@@ -98,14 +109,8 @@ async def create_posts(post: Post, db: Session = Depends(get_db)):
 
     # new_post = cursor.fetchone()
     # conn.commit()
-    new_post = models.Post(**post.model_dump())
-    db.add(new_post)
-    db.commit()
-    db.refresh(new_post)
-    return {"data": new_post}
 
 
-# Falta testa
 @app.put("/posts/{id}")
 async def update_post(id: int, post: Post):
     cursor.execute(
@@ -125,13 +130,16 @@ async def update_post(id: int, post: Post):
 
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_post(id: int):
-    cursor.execute("DELETE FROM posts WHERE id = %s RETURNING *", (str(id),))
-    post = cursor.fetchone()
-    conn.commit()
-    if post == None:
+async def delete_post(id: int, db: Session = Depends(get_db)):
+    post = db.query(models.Post).filter(models.Post.id == id)
+    # cursor.execute("DELETE FROM posts WHERE id = %s RETURNING *", (str(id),))
+    # post = cursor.fetchone()
+    # conn.commit()
+    if post.first() == None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Post with id: {id} does not exist",
         )
+    post.delete(synchronize_session=False)
+    db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
