@@ -7,20 +7,11 @@ from psycopg2.extras import RealDictCursor
 import time
 from sqlalchemy.orm import Session
 from .database import engine, get_db
-from . import models
-
+from . import models, schemas
 
 models.Base.metadata.create_all(bind=engine)
 
-
 app = FastAPI()
-
-
-class Post(BaseModel):
-    title: str
-    content: str
-    published: bool = True
-
 
 while True:
     try:
@@ -96,7 +87,7 @@ async def get_post(id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
-async def create_posts(post: Post, db: Session = Depends(get_db)):
+async def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)):
     new_post = models.Post(**post.model_dump())
     db.add(new_post)
     db.commit()
@@ -112,7 +103,7 @@ async def create_posts(post: Post, db: Session = Depends(get_db)):
 
 
 @app.put("/posts/{id}")
-async def update_post(id: int, post: Post, db: Session = Depends(get_db)):
+async def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(get_db)):
     post_query = db.query(models.Post).filter(models.Post.id == id)
     update = post_query.first()
 
