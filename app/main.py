@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from fastapi import FastAPI, Response, status, HTTPException, Depends
 from pydantic import BaseModel
 from random import randrange
@@ -58,15 +58,15 @@ async def root():
     return {"message": "Hello World"}
 
 
-@app.get("/posts", status_code=status.HTTP_200_OK)
+@app.get("/posts", status_code=status.HTTP_200_OK, response_model=List[schemas.Post])
 async def get_posts(db: Session = Depends(get_db)):
     posts = db.query(models.Post).all()
-    return {"message": posts}
+    return posts
     # cursor.execute("SELECT * FROM posts")
     # posts = cursor.fetchall()
 
 
-@app.get("/posts/{id}", status_code=status.HTTP_200_OK)
+@app.get("/posts/{id}", status_code=status.HTTP_200_OK, response_model=schemas.Post)
 async def get_post(id: int, db: Session = Depends(get_db)):
     post = db.query(models.Post).filter(models.Post.id == id).first()
     if not post:
@@ -74,7 +74,7 @@ async def get_post(id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Post with id ${id}, was not found!",
         )
-    return {"message": post}
+    return post
     # cursor.execute("SELECT * FROM posts WHERE id = %s", (str(id),))
     # post = cursor.fetchone()
 
@@ -86,13 +86,13 @@ async def get_post(id: int, db: Session = Depends(get_db)):
     #     )
 
 
-@app.post("/posts", status_code=status.HTTP_201_CREATED)
+@app.post("/posts", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
 async def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)):
     new_post = models.Post(**post.model_dump())
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
-    return {"data": new_post}
+    return new_post
     # cursor.execute(
     #     "INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING *  ",
     #     (post.title, post.content, post.published),
@@ -102,7 +102,7 @@ async def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db)):
     # conn.commit()
 
 
-@app.put("/posts/{id}")
+@app.put("/posts/{id}", response_model=schemas.Post)
 async def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(get_db)):
     post_query = db.query(models.Post).filter(models.Post.id == id)
     update = post_query.first()
@@ -116,7 +116,7 @@ async def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(g
     post_query.update(post.model_dump(), synchronize_session=False)
     db.commit()
 
-    return {"data": post_query.first()}
+    return post_query.first()
     # cursor.execute(
     #     "UPDATE posts SET title = %s, content = %s, published = %s WHERE id = %s RETURNING *",
     #     (post.title, post.content, post.published, str(id)),
