@@ -6,7 +6,7 @@ import time
 from sqlalchemy.orm import Session
 from .database import engine, get_db
 from . import models, schemas, utils
-from .routers import post, user
+from .routers import post, user, auth
 
 
 models.Base.metadata.create_all(bind=engine)
@@ -31,6 +31,7 @@ while True:
         print(f"Erro: {erro}")
         time.sleep(2)
 
+app.include_router(auth.router)
 app.include_router(user.router)
 app.include_router(post.router)
 
