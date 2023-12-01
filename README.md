@@ -70,7 +70,7 @@ return {'message': 'Olá Mundo!'}
   O **uvicorn** nos fornece um servidor para desenvolvermos e testar a API.
 
 ```bash
-poetry add uvicorn
+poetry add "uvicorn"
 
 # Para executar nossa estrutura
 # esse comando inicia o servidor apontando para o arquivo main.py
@@ -91,6 +91,7 @@ python-multipart
 python-dotenv
 ```
 
+- Vai funcionar como o package.json,
 - Em seguida, usar o comando:
 
 ```bash
