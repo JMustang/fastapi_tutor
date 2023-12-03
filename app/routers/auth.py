@@ -15,7 +15,7 @@ def login(
 ):
     user = (
         db.query(models.User)
-        .filter(models.User.email == user_credentials.email)
+        .filter(models.User.email == user_credentials.username)
         .first()
     )
 

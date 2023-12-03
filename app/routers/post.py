@@ -16,7 +16,11 @@ async def get_posts(db: Session = Depends(get_db)):
 
 
 @router.get("/{id}", status_code=status.HTTP_200_OK, response_model=schemas.Post)
-async def get_post(id: int, db: Session = Depends(get_db)):
+async def get_post(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: int = Depends(oauth2.get_current_user),
+):
     post = db.query(models.Post).filter(models.Post.id == id).first()
     if not post:
         raise HTTPException(
@@ -30,7 +34,7 @@ async def get_post(id: int, db: Session = Depends(get_db)):
 async def create_posts(
     post: schemas.PostCreate,
     db: Session = Depends(get_db),
-    get_current_user: int = Depends(oauth2.get_current_user),
+    current_user: int = Depends(oauth2.get_current_user),
 ):
     new_post = models.Post(**post.model_dump())
     db.add(new_post)
@@ -40,7 +44,12 @@ async def create_posts(
 
 
 @router.put("/{id}", response_model=schemas.Post)
-async def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(get_db)):
+async def update_post(
+    id: int,
+    post: schemas.PostCreate,
+    db: Session = Depends(get_db),
+    current_user: int = Depends(oauth2.get_current_user),
+):
     post_query = db.query(models.Post).filter(models.Post.id == id)
     update = post_query.first()
 
@@ -57,7 +66,11 @@ async def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(g
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_post(id: int, db: Session = Depends(get_db)):
+async def delete_post(
+    id: int,
+    db: Session = Depends(get_db),
+    current_user: int = Depends(oauth2.get_current_user),
+):
     post = db.query(models.Post).filter(models.Post.id == id)
     if post.first() == None:
         raise HTTPException(
