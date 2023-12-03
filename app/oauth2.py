@@ -1,4 +1,4 @@
-from jose import JWSError, jwt
+from jose import JWTError, jwt
 from datetime import timedelta, datetime
 from . import schemas, database, models
 from fastapi import Depends, HTTPException, status
@@ -26,8 +26,8 @@ def verify_access_token(token: str, credentials_exception):
         id: str = payload.get("user_id")
         if id is None:
             raise credentials_exception
-        token_data = schemas.TokenData(id=id)
-    except JWSError:
+        token_data = schemas.TokenData(id=str(id))
+    except JWTError:
         raise credentials_exception
     return token_data
 
