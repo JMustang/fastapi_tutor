@@ -59,6 +59,12 @@ async def update_post(
             detail=f"Post with id: {id} does not exist",
         )
 
+    if post.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to perform requested action",
+        )
+
     post_query.update(post.model_dump(), synchronize_session=False)
     db.commit()
 
@@ -77,6 +83,13 @@ async def delete_post(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Post with id: {id} does not exist",
         )
+
+    if post.owner_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to perform requested action",
+        )
+
     post.delete(synchronize_session=False)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
