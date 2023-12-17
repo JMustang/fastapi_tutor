@@ -3,6 +3,7 @@ __pycache__
 .coverage
 app.db
 test.db
+.idea
 env
 htmlcov
 .env

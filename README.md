@@ -63,7 +63,7 @@ from fastapi import FastAPI
 app = FastAPI()
 @app.get('/')
 def rota_teste():
-return {'message': 'Olá Mundo!'}
+    return {'message': 'Olá Mundo!'}
 ```
 
 - Para executar precisamos de um servidor, no fastapi e recomendado usar o **uvicorn**.
